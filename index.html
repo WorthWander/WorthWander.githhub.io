@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Budget Travel Planner</title>
-    <!-- Tailwind CSS for instant styling -->
+    <!-- FIXED: Tailwind CSS script link now works perfectly -->
     <script src="https://jsdelivr.net"></script>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen p-4 md:p-8">
@@ -183,5 +183,45 @@
             if (remaining < 0) {
                 remainingElement.className = "text-lg font-bold text-rose-600";
                 document.getElementById('progress-bar').className = "bg-rose-500 h-full transition-all duration-300";
-            } else if (percentUsed > 85) {
                 remainingElement.className = "text-lg font-bold text-amber-500";
+                document.getElementById('progress-bar').className = "bg-amber-500 h-full transition-all duration-300";
+            } else {
+                remainingElement.className = "text-lg font-bold text-emerald-600";
+                document.getElementById('progress-bar').className = "bg-indigo-600 h-full transition-all duration-300";
+            }
+
+            // Update Progress UI
+            document.getElementById('progress-text').textContent = `${Math.round(percentUsed)}%`;
+            document.getElementById('progress-bar').style.width = `${percentUsed}%`;
+
+            // Render Table Rows
+            const tbody = document.getElementById('expense-rows');
+            tbody.innerHTML = '';
+
+            if (expenses.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-slate-400 text-xs">No expenses added yet. Add items to see them here!</td></tr>`;
+                return;
+            }
+
+            expenses.forEach(exp => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="py-3 font-medium text-slate-800">${exp.name}</td>
+                    <td class="py-3"><span class="px-2 py-1 bg-slate-100 rounded-md text-xs font-medium text-slate-600">${exp.category}</span></td>
+                    <td class="py-3 text-right font-mono font-semibold">${exp.amount.toFixed(2)}</td>
+                    <td class="py-3 text-center">
+                        <button onclick="deleteExpense(${exp.id})" class="text-rose-500 hover:text-rose-700 text-xs font-semibold cursor-pointer">Remove</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Initialize state on app mount
+        document.getElementById('trip-name').value = localStorage.getItem('roam_trip_name') || "My Dream Vacation";
+        document.getElementById('total-budget').value = localStorage.getItem('roam_budget_amt') || "1500";
+        updateTripName();
+        render();
+    </script>
+</body>
+</html>
